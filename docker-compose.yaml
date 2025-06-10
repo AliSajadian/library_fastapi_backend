@@ -1,0 +1,29 @@
+# docker-compose.yml
+version: "3.9"
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db_library
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:admin@db:5432/db_library
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    working_dir: /app
+
+volumes:
+  postgres_data:
